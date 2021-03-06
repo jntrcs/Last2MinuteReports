@@ -97,10 +97,12 @@ if(team_prefix %in% game_table$home_team_abbr | team_prefix%in% game_table$away_
   
   handles = read_csv("TwitterHandles.csv")
   
-  opposing_team = if_else(game$home_team_abbr=="UTA", game$away_team_abbr, game$home_team_abbr)
+  opposing_team = if_else(game$home_team_abbr==team_prefix, game$away_team_abbr, game$home_team_abbr)
   opposing_team_handle = handles %>% filter(Abbreviation==opposing_team) %>% pull
   
-  intro = glue::glue("Today's @utahjazz vs. {opposing_team_handle} game will be reffed by")
+  our_handle = handles %>% filter(Abbreviation==team_prefix) %>% pull
+  
+  intro = glue::glue("Today's {our_handle} vs. {opposing_team_handle} game will be reffed by")
   first_ref = paste0("\n\n1. ", our_ref_stats$Ref[1], ": averages ", our_ref_stats$Bad_Calls_Per_Minute[1],
                      " bad calls per minute in Last 2 Minute Reports, ranking #", our_ref_stats$League_Rank[1],
                      " of ", nrow(ref_scores), " NBA refs\n\n") 

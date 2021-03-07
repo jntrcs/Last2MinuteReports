@@ -122,7 +122,10 @@ if(team_prefix %in% game_table$home_team_abbr | team_prefix%in% game_table$away_
   
   if(ready_to_post){
     if (full_tweet_length<280){
-      rtweet::post_tweet(paste0(intro, first_ref, other_refs), token=twitter_token)
+      tweet=paste0(intro, first_ref, other_refs)
+      #If we have the real estate, add the Jazz #takenote hashtag
+      if(nchar(tweet)<269) tweet = paste0(tweet, "\n\n#takenote")
+      rtweet::post_tweet(tweet, token=twitter_token)
     }else{
       if (nchar(intro)+nchar(first_ref)>280){
         first_tweet = paste0(substr(paste0(intro, first_ref), 1, 277), "...")

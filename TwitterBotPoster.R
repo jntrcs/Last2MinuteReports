@@ -1,7 +1,20 @@
-library(tidyverse)
-library(rvest)
+suppressPackageStartupMessages(library(tidyverse, warn.conflicts=F))
+suppressPackageStartupMessages(library(rvest, warn.conflicts = F))
 
 team_prefix="UTA"
+
+##These will need to be changed by anyone using my script
+setwd("C://Users//jntrcs//Documents//Last2MinuteReports")
+source("MySecretURL.R")
+
+##Function to send myself slack notifictations
+slack_me <- function (message){
+  httr::POST(url = slack_url, #Slack url comes from MySecretURL.R
+             body = paste0("{\"text\":\"", paste(message, collapse = " "),
+                           "\"}"), content_type = "json")
+  invisible(NULL)
+}
+
 
 ### Check for a game tonight
 date= Sys.Date()
@@ -126,6 +139,7 @@ if(team_prefix %in% game_table$home_team_abbr | team_prefix%in% game_table$away_
       #If we have the real estate, add the Jazz #takenote hashtag
       if(nchar(tweet)<269) tweet = paste0(tweet, "\n\n#takenote")
       rtweet::post_tweet(tweet, token=twitter_token)
+      slack_me(tweet)
     }else{
       if (nchar(intro)+nchar(first_ref)>280){
         first_tweet = paste0(substr(paste0(intro, first_ref), 1, 277), "...")
@@ -138,10 +152,14 @@ if(team_prefix %in% game_table$home_team_abbr | team_prefix%in% game_table$away_
         second_tweet =  other_refs
       }
       rtweet::post_tweet(first_tweet, token=twitter_token)
+      slack_me(first_tweet)
       rtweet::post_tweet(second_tweet, token=twitter_token)
+      slack_me(second_tweet)
     }
-  }else(stop("TWEET NOT POSTED. SOMETHING WENT WRONG"))
+  }else{
+      slack_me("TWEET NOT POSTED. SOMETHING WENT WRONG")
+    }
      
   
-}else print("No game detected")
+}else slack_me("Twitter bot automation ran, no game detected")
 

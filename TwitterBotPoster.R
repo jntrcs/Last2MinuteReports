@@ -6,6 +6,7 @@ team_prefix="UTA"
 ##These will need to be changed by anyone using my script
 setwd("C://Users//jntrcs//Documents//Last2MinuteReports")
 source("MySecretURL.R")
+twitter_token=readRDS("MyToken.RDS")
 
 ##Function to send myself slack notifictations
 slack_me <- function (message){
@@ -99,9 +100,6 @@ if(team_prefix %in% game_table$home_team_abbr | team_prefix%in% game_table$away_
               Bad_Calls_Per_Minute = Missed_Calls/Minutes) %>%
     arrange(desc(Bad_Calls_Per_Minute), Correct_Calls, Minutes, Ref) %>%
     mutate(League_Rank=nrow(.):1, Ref=fct_rev(fct_inorder(Ref)))
-  
-  #Get Twitter Token
-  twitter_token <- rtweet::get_token()
   
   
   ##Compose Tweet
